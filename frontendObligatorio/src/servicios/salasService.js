@@ -1,10 +1,10 @@
 import { salasMock } from "../api/MockData";
 
-// Simula una llamada a la API
+// aca lo que hago es simular una llamada a una api para corroborar que todo funciona bien, y luego simulo un tiempo de 500ms de retraso.
 export function obtenerSalas() {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(salasMock);
-    }, 500); // simula un pequeño retraso de red
+    }, 500); 
   });
 }
