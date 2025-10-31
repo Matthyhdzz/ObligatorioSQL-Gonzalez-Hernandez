@@ -137,3 +137,4 @@ INSERT INTO reserva_participante (ci_participante, id_reserva, fecha_solicitud_r
 
 INSERT INTO sancion_participante (ci_participante, fecha_inicio, fecha_fin) VALUES
 (87654321, '2025-11-05', '2025-11-20');
+
