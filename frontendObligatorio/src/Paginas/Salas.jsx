@@ -15,24 +15,26 @@ export default function Salas() {
       {salas.length === 0 ? (
         <p>Cargando salas...</p>
       ) : (
-        <table border="1" cellPadding="8" style={{ borderCollapse: "collapse", marginTop: "1rem" }}>
+        <table
+          border="1"
+          cellPadding="8"
+          style={{ borderCollapse: "collapse", marginTop: "1rem" }}
+        >
           <thead>
             <tr>
-              <th>ID</th>
-              <th>Nombre</th>
+              <th>Nombre Sala</th>
               <th>Edificio</th>
               <th>Capacidad</th>
-              <th>Tipo</th>
+              <th>Tipo de Sala</th>
             </tr>
           </thead>
           <tbody>
             {salas.map((sala) => (
-              <tr key={sala.id}>
-                <td>{sala.id}</td>
-                <td>{sala.nombre}</td>
+              <tr key={`${sala.nombre_sala}-${sala.edificio}`}>
+                <td>{sala.nombre_sala}</td>
                 <td>{sala.edificio}</td>
                 <td>{sala.capacidad}</td>
-                <td>{sala.tipo}</td>
+                <td>{sala.tipo_sala}</td>
               </tr>
             ))}
           </tbody>

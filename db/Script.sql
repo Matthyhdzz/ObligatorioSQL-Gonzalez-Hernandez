@@ -1,12 +1,12 @@
 
-CREATE DATABASE IF NOT EXISTS salas_ucu CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-
+DROP DATABASE IF EXISTS salas_ucu;
+CREATE DATABASE salas_ucu CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE salas_ucu;
 
 
 CREATE TABLE login (
     correo VARCHAR(50) PRIMARY KEY NOT NULL,
-    contraseña VARCHAR(255) NOT NULL
+    contrasena VARCHAR(255) NOT NULL
 );
 
 CREATE TABLE facultad (
@@ -88,7 +88,7 @@ CREATE TABLE sancion_participante (
     FOREIGN KEY (ci_participante) REFERENCES participante(ci)
 );
 
-INSERT INTO login (correo, contraseña) VALUES
+INSERT INTO login (correo, contrasena) VALUES
 ('ana@ucu.edu.uy', '1234'),
 ('juan@ucu.edu.uy', 'abcd'),
 ('docente@ucu.edu.uy', 'admin');
@@ -115,7 +115,7 @@ INSERT INTO participante_programa_academico (ci_participante, nombre_programa, r
 
 INSERT INTO edificio (nombre_edificio, direccion, departamento) VALUES
 ('Edificio Central', 'Av. 8 de Octubre 2738', 'Montevideo'),
-('Campus Pocitos', 'Bvar. España 1234', 'Montevideo');
+('Campus Pocitos', 'Bvar. Espana 1234', 'Montevideo');
 
 INSERT INTO sala (nombre_sala, edificio, capacidad, tipo_sala) VALUES
 ('Sala 101', 'Edificio Central', 30, 'libre'),

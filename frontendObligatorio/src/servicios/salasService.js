@@ -1,10 +1,13 @@
-import { salasMock } from "../api/MockData";
-
-// aca lo que hago es simular una llamada a una api para corroborar que todo funciona bien, y luego simulo un tiempo de 500ms de retraso.
-export function obtenerSalas() {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(salasMock);
-    }, 500); 
-  });
+export async function obtenerSalas() {
+  try {
+    const response = await fetch("http://localhost:5000/sala"); // 👈 Flask endpoint real
+    if (!response.ok) {
+      throw new Error("Error al obtener las salas");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error al obtener salas:", error);
+    return [];
+  }
 }
