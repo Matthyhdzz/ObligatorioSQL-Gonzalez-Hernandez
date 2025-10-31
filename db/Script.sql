@@ -87,3 +87,53 @@ CREATE TABLE sancion_participante (
     fecha_fin DATE,
     FOREIGN KEY (ci_participante) REFERENCES participante(ci)
 );
+
+INSERT INTO login (correo, contraseña) VALUES
+('ana@ucu.edu.uy', '1234'),
+('juan@ucu.edu.uy', 'abcd'),
+('docente@ucu.edu.uy', 'admin');
+
+INSERT INTO facultad (nombre) VALUES
+('Ingeniería'),
+('Ciencias Humanas'),
+('Derecho');
+
+INSERT INTO programa_academico (nombre_programa, id_facultad, tipo) VALUES
+('Ingeniería en Informática', 1, 'grado'),
+('Psicología', 2, 'grado'),
+('Derecho Penal', 3, 'posgrado');
+
+INSERT INTO participante (ci, nombre, apellido, correo) VALUES
+(12345678, 'Ana', 'Pérez', 'ana@ucu.edu.uy'),
+(87654321, 'Juan', 'Rodríguez', 'juan@ucu.edu.uy'),
+(11112222, 'Carlos', 'López', 'docente@ucu.edu.uy');
+
+INSERT INTO participante_programa_academico (ci_participante, nombre_programa, rol) VALUES
+(12345678, 'Ingeniería en Informática', 'alumno'),
+(87654321, 'Psicología', 'alumno'),
+(11112222, 'Ingeniería en Informática', 'docente');
+
+INSERT INTO edificio (nombre_edificio, direccion, departamento) VALUES
+('Edificio Central', 'Av. 8 de Octubre 2738', 'Montevideo'),
+('Campus Pocitos', 'Bvar. España 1234', 'Montevideo');
+
+INSERT INTO sala (nombre_sala, edificio, capacidad, tipo_sala) VALUES
+('Sala 101', 'Edificio Central', 30, 'libre'),
+('Sala 102', 'Edificio Central', 20, 'posgrado'),
+('Sala Docente 1', 'Campus Pocitos', 10, 'docente');
+
+INSERT INTO turno (hora_inicio, hora_fin) VALUES
+('2025-11-01 08:00:00', '2025-11-01 10:00:00'),
+('2025-11-01 10:00:00', '2025-11-01 12:00:00');
+
+INSERT INTO reserva (nombre_sala, edificio, fecha, id_turno, estado) VALUES
+('Sala 101', 'Edificio Central', '2025-11-03', 1, 'activa'),
+('Sala 102', 'Edificio Central', '2025-11-04', 2, 'finalizada');
+
+INSERT INTO reserva_participante (ci_participante, id_reserva, fecha_solicitud_reserva, asistencia) VALUES
+(12345678, 1, '2025-10-31', 'true'),
+(11112222, 1, '2025-10-31', 'true'),
+(87654321, 2, '2025-10-30', 'false');
+
+INSERT INTO sancion_participante (ci_participante, fecha_inicio, fecha_fin) VALUES
+(87654321, '2025-11-05', '2025-11-20');
