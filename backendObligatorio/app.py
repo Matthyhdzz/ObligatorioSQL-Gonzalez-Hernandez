@@ -48,5 +48,19 @@ def obtener_sanciones():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+@app.route('/reservas', methods=['GET'])
+def obtener_reservas():
+    try:
+        conn = get_connection()
+        cursor = conn.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM reserva;")
+        reservas = cursor.fetchall()
+        cursor.close()
+        conn.close()
+        return jsonify(reservas)
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
