@@ -20,6 +20,7 @@ export default function Navbar() {
       <Link to="/participantes" style={linkStyle}>Participantes</Link>
       <Link to="/reservas" style={linkStyle}>Reservas</Link>
       <Link to="/sanciones" style={linkStyle}>Sanciones</Link>
+      <Link to="/reportes" style={linkStyle}>Reportes</Link> 
     </nav>
   );
 }

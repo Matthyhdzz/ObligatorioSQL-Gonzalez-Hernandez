@@ -5,12 +5,9 @@ from db import get_connection
 app = Flask(__name__)
 CORS(app)
 
-
 @app.route('/')
 def home():
     return jsonify({"mensaje": "API de Salas de Estudio funcionando"})
-
-
 
 @app.route('/participantes', methods=['GET'])
 def obtener_participantes():
@@ -25,32 +22,27 @@ def obtener_participantes():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
 @app.route('/participantes', methods=['POST'])
 def crear_participante():
     try:
         data = request.json
-
         ci = data.get('ci')
         nombre = data.get('nombre')
         apellido = data.get('apellido')
         correo = data.get('correo')
         contrasena = data.get('contrasena')
 
-        
         if not all([ci, nombre, apellido, correo, contrasena]):
             return jsonify({"error": "Faltan campos obligatorios"}), 400
 
         conn = get_connection()
         cursor = conn.cursor()
 
-       
         cursor.execute("""
             INSERT INTO login (correo, contrasena)
             VALUES (%s, %s)
         """, (correo, contrasena))
 
-      
         cursor.execute("""
             INSERT INTO participante (ci, nombre, apellido, correo)
             VALUES (%s, %s, %s, %s)
@@ -65,13 +57,10 @@ def crear_participante():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-
 @app.route('/participantes/<int:ci>', methods=['PUT'])
 def actualizar_participante(ci):
     try:
         data = request.json
-
         nombre = data.get('nombre')
         apellido = data.get('apellido')
         correo = data.get('correo')
@@ -83,14 +72,12 @@ def actualizar_participante(ci):
         conn = get_connection()
         cursor = conn.cursor()
 
-        
         cursor.execute("""
             UPDATE participante 
             SET nombre = %s, apellido = %s, correo = %s
             WHERE ci = %s
         """, (nombre, apellido, correo, ci))
 
-        
         if contrasena:
             cursor.execute("""
                 UPDATE login
@@ -107,15 +94,12 @@ def actualizar_participante(ci):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-
 @app.route('/participantes/<int:ci>', methods=['DELETE'])
 def eliminar_participante(ci):
     try:
         conn = get_connection()
         cursor = conn.cursor()
 
-       
         cursor.execute("SELECT correo FROM participante WHERE ci = %s", (ci,))
         resultado = cursor.fetchone()
 
@@ -125,8 +109,6 @@ def eliminar_participante(ci):
         correo = resultado[0]
 
         cursor.execute("DELETE FROM participante WHERE ci = %s", (ci,))
-
-        
         cursor.execute("DELETE FROM login WHERE correo = %s", (correo,))
 
         conn.commit()
@@ -137,9 +119,6 @@ def eliminar_participante(ci):
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
-
 
 @app.route('/salas', methods=['GET'])
 def obtener_salas():
@@ -154,12 +133,9 @@ def obtener_salas():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
 @app.route('/salas', methods=['POST'])
 def crear_sala():
     return jsonify({"estado": "falta implementar"})
-
-
 
 @app.route('/sanciones', methods=['GET'])
 def obtener_sanciones():
@@ -174,11 +150,9 @@ def obtener_sanciones():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
 @app.route('/sanciones', methods=['POST'])
 def crear_sancion_manual():
     return jsonify({"estado": "falta implementar"})
-
 
 @app.route('/reservas', methods=['GET'])
 def obtener_reservas():
@@ -193,12 +167,10 @@ def obtener_reservas():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
 @app.route('/reservas', methods=['POST'])
 def crear_reserva():
     try:
         data = request.json
-
         nombre_sala = data.get("nombre_sala")
         edificio = data.get("edificio")
         fecha = data.get("fecha")
@@ -211,8 +183,6 @@ def crear_reserva():
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
-    
-        # VALIDACIÓN 1: Sala existe y obtener capacidad y el tipo
         cursor.execute("""
             SELECT * FROM sala
             WHERE nombre_sala = %s AND edificio = %s
@@ -223,13 +193,11 @@ def crear_reserva():
             return jsonify({"error": "La sala no existe"}), 404
 
         capacidad = sala["capacidad"]
-        tipo_sala = sala["tipo_sala"]  # libre / posgrado / docente
+        tipo_sala = sala["tipo_sala"]
 
         if len(participantes) > capacidad:
             return jsonify({"error": "Se supera la capacidad de la sala"}), 400
 
-    
-        # VALIDACIÓN 2: Turno existe
         cursor.execute("""
             SELECT * FROM turno WHERE id_turno = %s
         """, (id_turno,))
@@ -238,15 +206,11 @@ def crear_reserva():
         if not turno:
             return jsonify({"error": "El turno no existe"}), 404
 
-        # VALIDACIÓN 3: Todos los participantes existen
         for ci in participantes:
-            cursor.execute("""
-                SELECT * FROM participante WHERE ci = %s
-            """, (ci,))
+            cursor.execute("SELECT * FROM participante WHERE ci = %s", (ci,))
             if not cursor.fetchone():
                 return jsonify({"error": f"El participante {ci} no existe"}), 404
 
-        # VALIDACIÓN 4: Sanciones activas
         for ci in participantes:
             cursor.execute("""
                 SELECT * FROM sancion_participante
@@ -256,8 +220,6 @@ def crear_reserva():
             if cursor.fetchone():
                 return jsonify({"error": f"El participante {ci} está sancionado"}), 403
 
-       
-        # VALIDACIÓN 5: Tipo de sala (posgrado / docente)
         for ci in participantes:
             cursor.execute("""
                 SELECT rol FROM participante_programa_academico
@@ -267,11 +229,9 @@ def crear_reserva():
 
             if tipo_sala == "posgrado" and rol != "docente":
                 return jsonify({"error": f"La sala es de posgrado. {ci} no puede reservar"}), 403
-
             if tipo_sala == "docente" and rol != "docente":
                 return jsonify({"error": f"La sala es de docentes. {ci} no puede reservar"}), 403
 
-        # VALIDACIÓN 6: Máximo 3 reservas activas por semana
         for ci in participantes:
             cursor.execute("""
                 SELECT COUNT(*) AS total FROM reserva r
@@ -283,7 +243,6 @@ def crear_reserva():
             if cursor.fetchone()["total"] >= 3:
                 return jsonify({"error": f"El participante {ci} ya tiene 3 reservas activas esta semana"}), 403
 
-        # VALIDACIÓN 7: Máximo 2 horas por día
         for ci in participantes:
             cursor.execute("""
                 SELECT COUNT(*) AS total FROM reserva r
@@ -294,15 +253,12 @@ def crear_reserva():
             if cursor.fetchone()["total"] >= 2:
                 return jsonify({"error": f"El participante {ci} ya tiene 2h reservadas ese día"}), 403
 
-        # CREAR RESERVA
         cursor.execute("""
             INSERT INTO reserva (nombre_sala, edificio, fecha, id_turno, estado)
             VALUES (%s, %s, %s, %s, 'activa')
         """, (nombre_sala, edificio, fecha, id_turno))
         id_reserva = cursor.lastrowid
 
-
-        # INSERTAR PARTICIPANTES
         for ci in participantes:
             cursor.execute("""
                 INSERT INTO reserva_participante (ci_participante, id_reserva, fecha_solicitud_reserva, asistencia)
@@ -317,8 +273,6 @@ def crear_reserva():
 
     except Exception as e:
         return jsonify({"error": str(e)}), 500
-
-
 
 @app.route('/reservas/<int:id_reserva>/asistencia', methods=['PUT'])
 def registrar_asistencia(id_reserva):
@@ -348,7 +302,6 @@ def registrar_asistencia(id_reserva):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
 @app.route('/reservas/<int:id_reserva>/cancelar', methods=['PUT'])
 def cancelar_reserva(id_reserva):
     try:
@@ -375,22 +328,18 @@ def cancelar_reserva(id_reserva):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-
-
 @app.route('/reservas/<int:id_reserva>/finalizar', methods=['PUT'])
 def finalizar_reserva(id_reserva):
     try:
         conn = get_connection()
         cursor = conn.cursor(dictionary=True)
 
-        # Marcamos reserva como finalizada
         cursor.execute("""
             UPDATE reserva
             SET estado = 'finalizada'
             WHERE id_reserva = %s
         """, (id_reserva,))
 
-        # Obtenemos las asistencias
         cursor.execute("""
             SELECT ci_participante, asistencia 
             FROM reserva_participante
@@ -398,7 +347,6 @@ def finalizar_reserva(id_reserva):
         """, (id_reserva,))
         asistentes = cursor.fetchall()
 
-        # Si nadie asistió se aplica una sanción automática
         nadie_asistio = all(a["asistencia"] == 'false' for a in asistentes)
 
         if nadie_asistio:
@@ -417,6 +365,7 @@ def finalizar_reserva(id_reserva):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+from reportes import *
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
