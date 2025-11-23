@@ -1,6 +1,6 @@
 export async function obtenerSalas() {
   try {
-    const response = await fetch("http://localhost:5000/sala"); // 👈 Flask endpoint real
+    const response = await fetch("http://localhost:5000/salas"); 
     if (!response.ok) {
       throw new Error("Error al obtener las salas");
     }

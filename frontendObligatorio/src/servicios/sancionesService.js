@@ -1,6 +1,6 @@
 export async function obtenerSanciones() {
   try {
-    const response = await fetch("http://localhost:5000/sancion_participante");
+    const response = await fetch("http://localhost:5000/sanciones");
     if (!response.ok) {
       throw new Error("Error al obtener las sanciones");
     }
